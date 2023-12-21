@@ -3,7 +3,7 @@
 **Description:**\
 This is my variation of a minikame quadruped robot thingy.
 I basically wanted to have a kame like robot but utilizing a esp32 or esp8266 to be controlled via web interface.\
-It seems there once were more of those kind of projects but searching the internet ended in a lot of dead links.
+It seems there once were more of those kind of projects but searching the internet ended in a lot of dead links..
 
 **Credits:**\
 Go to.. 
