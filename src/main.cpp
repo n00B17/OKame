@@ -109,7 +109,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       <td align="center" valign="middle"><form name="form1" method="post" action="">&nbsp;</form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="nix"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">nix</button> </label></form></td>
     </tr>
-    
+    <!--
     <tr><td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Unterarm_hoch" type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Unterarm_hoch</button> </label></form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Oberarm_hoch"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Oberarm_hoch</button> </label></form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Greifer_zu"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Greifer_zu</button> </label></form></td>
@@ -118,7 +118,8 @@ const char index_html[] PROGMEM = R"rawliteral(
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Oberarm_runter"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Oberarm_runter</button> </label></form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Greifer_auf"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Greifer_auf</button> </label></form></td>
     </tr>
-  </table><p class="foot">this application requires Mwilmar Quadruped platform.</p></body></html>
+  </table><p class="foot">this application requires Mwilmar Quadruped platform.</p></body> -->
+  </html>
 
    <script>
    function toggleOnbox(x) {
