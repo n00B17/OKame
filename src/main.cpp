@@ -108,9 +108,9 @@ const char index_html[] PROGMEM = R"rawliteral(
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="run"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Run</button> </label></form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="nix"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">nix</button> </label></form></td>
     </tr>
-    <tr><td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="nix" type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">nix</button> </label></form></td>
+    <tr><td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="update" type="button" onmousedown="goToUpdatePage();" ontouchstart="goToUpdatePage();" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">Update</button> </label></form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action="">&nbsp;</form></td>
-      <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="nix"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">nix</button> </label></form></td>
+      <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="wifi"  type="button" onmousedown="goToWifiPage();" ontouchstart="goToWifiPage();" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">WiFi</button> </label></form></td>
     </tr>
     <!--
     <tr><td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Unterarm_hoch" type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Unterarm_hoch</button> </label></form></td>
@@ -121,7 +121,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Oberarm_runter"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Oberarm_runter</button> </label></form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Greifer_auf"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Greifer_auf</button> </label></form></td>
     </tr>
-  </table><p class="foot">this application requires Mwilmar Quadruped platform.</p></body> -->
+  </table><p class="foot"><a href="/update">Update Firmware</a>.</p></body> -->
   </html>
 
    <script>
@@ -135,8 +135,23 @@ const char index_html[] PROGMEM = R"rawliteral(
      xhr.open("GET", "/off" , true);
      xhr.send();
    }
+   function goToUpdatePage() {
+    // Redirect to the "/update" page
+    window.location.href = "/update";
+    }
+    function goToWifiPage() {
+    // Redirect to the "/update" page
+    window.location.href = "/wifi-setting";
+    }
   </script>
   </body>
+</html>)rawliteral";
+
+
+//for now this the wifi-setting page is just a place holder 
+const char wifi_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE html><html>
+<head> TEstpage </head>
 </html>)rawliteral";
 
 void notFound(AsyncWebServerRequest *request) {
@@ -163,7 +178,7 @@ void setup() {
   pinMode(output, OUTPUT);
   digitalWrite(output, LOW);
 
-   // Start mDNS
+   // Start mDNS ... so that it could be found via kame.local ... on android only works with additional app, e.g. BonjourBrowser
   MDNS.begin("kame");
   MDNS.addService("http", "tcp", 80);
   
@@ -172,6 +187,11 @@ void setup() {
   // Send web page to client
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", index_html);
+  });
+
+  // Send Wifi-setting page to client
+  server.on("/wifi-setting", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", wifi_html);
   });
 
   // Receive an HTTP GET request
@@ -281,8 +301,15 @@ void loop() {
     robot.clawOpen();
     }
     //Serial.print("ComCode=");
-    //Serial.println(ComCode);            
- }
+    //Serial.println(ComCode);    
+//update+wifi
+    if (ComCode=="wifi") {
+    Serial.println(ComCode);  
+    }    
+    if (ComCode=="update") {
+    Serial.println(ComCode);      
+    } 
+  }
  if (!walk){
   robot.home();
  }
