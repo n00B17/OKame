@@ -17,6 +17,9 @@
 // ServoArm 21, 17, 16
 
 #include <Arduino.h>
+#include <ESPmDNS.h>
+
+
 //#include <WiFi.h>
 //#include <WiFiMulti_Generic.h>
 //#include <SoftwareSerial.h>
@@ -159,6 +162,12 @@ void setup() {
   
   pinMode(output, OUTPUT);
   digitalWrite(output, LOW);
+
+   // Start mDNS
+  MDNS.begin("kame");
+  MDNS.addService("http", "tcp", 80);
+  
+
   
   // Send web page to client
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
