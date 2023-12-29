@@ -24,12 +24,14 @@
 //#include <WiFiMulti_Generic.h>
 //#include <SoftwareSerial.h>
 //#include <Arduino_FreeRTOS.h>
-#include <AsyncTCP.h>
+//#include <AsyncTCP.h> already included in AsyncWebServer.h
 
-#include <ESPAsyncWebServer.h>
+//#include <ESPAsyncWebServer.h> // Async Web Server likely already included in ElegantOTA.h
 #include "minikame.h"
 #include <ElegantOTA.h>
 #include "credentials.h" //
+//#include <WiFiManager.h>
+#include <ESPAsyncWiFiManager.h>
 
 // REPLACE WITH YOUR NETWORK CREDENTIALS or set in credentials.h (see example file and rename)
 
@@ -149,10 +151,10 @@ const char index_html[] PROGMEM = R"rawliteral(
 
 
 //for now this the wifi-setting page is just a place holder 
-const char wifi_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE html><html>
-<head> TEstpage </head>
-</html>)rawliteral";
+// const char wifi_html[] PROGMEM = R"rawliteral(
+// <!DOCTYPE html><html>
+// <head> TEstpage </head>
+// </html>)rawliteral";
 
 void notFound(AsyncWebServerRequest *request) {
   request->send(404, "text/plain", "Not found");
@@ -160,19 +162,107 @@ void notFound(AsyncWebServerRequest *request) {
 
 AsyncWebServer server(80);
 
-void setup() {
-  Serial.begin(115200);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("WiFi Failed!");
-    return;
-  }
-  Serial.println();
-  Serial.print("ESP IP Address: http://");
-  Serial.println(WiFi.localIP());
+const char* wifi_html = R"rawliteral(
+<h2>WiFi Settings</h2>
+<form action="/connect" method="POST">
+  SSID: <input type="text" name="ssid"><br>
+  Password: <input type="password" name="pass"><br>
+  <input type="submit" value="Connect">
+</form>
+<button onclick="scan()">Scan</button>
+<div id="networks"></div>
+<button onclick="wipe()">Wipe Saved Networks</button>
+<button onclick="ap()">Switch to AP Mode</button>
+<a href="/">Back</a>
 
-  ComCode ="";
+<script>
+  function scan() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/scan", true);
+    xhr.send();
+  }
+
+  function wipe() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/wipe", true);
+    xhr.send();
+  }  
+
+  function ap() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/ap", true);
+    xhr.send();
+  }
+</script>
+)rawliteral";
+
+AsyncWiFiManager wifiManager(&server,{});
+
+void setup() {
+  // Serial.begin(115200);
+  // WiFi.mode(WIFI_STA);
+  // WiFi.begin(ssid, password);
+  // if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+  //   Serial.println("WiFi Failed!");
+  //   return;
+  // }
+  // Serial.println();
+  // Serial.print("ESP IP Address: http://");
+  // Serial.println(WiFi.localIP());
+
+  // ComCode ="";
+  wifiManager.autoConnect("kame");
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Connected");
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send_P(200, "text/html", index_html);
+    });
+  } else {
+    Serial.println("Failed to connect"); 
+  }
+
+  server.on("/wifi-setting", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", wifi_html);
+  });
+
+  server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+  int n = WiFi.scanNetworks();
+  String json = "[";
+  for (int i = 0; i < n; i++) {
+    json += "{";
+    json += "\"ssid\":\"" + WiFi.SSID(i) + "\","; 
+    json += "\"rssi\":" + String(WiFi.RSSI(i));
+    json += "}";
+    if (i < n - 1) {
+      json += ",";
+    }
+  }
+  json += "]";
+  request->send(200, "application/json", json); });
+
+
+  server.on("/wipe", HTTP_GET, [](AsyncWebServerRequest *request){
+    wifiManager.resetSettings();
+    request->send(200, "text/plain", "OK");
+  });
+
+  server.on("/ap", HTTP_GET, [](AsyncWebServerRequest *request){
+    wifiManager.startConfigPortal("kame");
+    request->send(200, "text/plain", "OK");
+  });
+
+  server.on("/connect", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+  String ssid = request->arg("ssid");
+  String pass = request->arg("pass");
+  
+  if(wifiManager.autoConnect(ssid.c_str(), pass.c_str())) {
+    request->send(200, "text/plain", "Connected");
+  } else {
+    request->send(500, "text/plain", "Failed to connect");
+  } });
 
   
   pinMode(output, OUTPUT);
