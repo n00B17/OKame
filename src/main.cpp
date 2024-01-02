@@ -31,8 +31,8 @@
 #include <ElegantOTA.h>
 #include "credentials.h" //
 //#include <WiFiManager.h>
-#include <ESPAsyncWiFiManager.h>
-#include <ArduinoJson.h>
+//#include <ESPAsyncWiFiManager.h>
+//#include <ArduinoJson.h>
 
 // REPLACE WITH YOUR NETWORK CREDENTIALS or set in credentials.h (see example file and rename)
 
