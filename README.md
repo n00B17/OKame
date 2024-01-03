@@ -23,7 +23,7 @@ It seems there once were more of those kind of projects but searching the intern
    + on the bottom right is a button to call the wifi-manager page to set and save new credentials and connect to that one (it only stores one set of credentials for now)
    + if connection fails it falls back to access point mode
 - in ap as well as sta mode it advertises itself via mDNS (multicast DNS)
-  + ..which doesnt work for android by default => I use the "BonjourBrowser" https://play.google.com/store/apps/details?id=de.wellenvogel.bonjourbrowser
+  + ..which doesnt work for android by default => I use the ["BonjourBrowser"](https://play.google.com/store/apps/details?id=de.wellenvogel.bonjourbrowser)
 
 **Credits:**\
 Go to.. 
