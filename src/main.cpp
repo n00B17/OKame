@@ -17,7 +17,8 @@
 // ServoArm 21, 17, 16
 
 #include <Arduino.h>
-#include <ESPmDNS.h>
+// #include <ESPmDNS.h>
+#include "WiFiConfig.h"
 
 
 //#include <WiFi.h>
@@ -31,14 +32,14 @@
 #include <ElegantOTA.h>
 #include "credentials.h" //
 //#include <WiFiManager.h>
-#include <ESPAsyncWiFiManager.h>
+// #include <ESPAsyncWiFiManager.h>
 #include <ArduinoJson.h>
 
 // REPLACE WITH YOUR NETWORK CREDENTIALS or set in credentials.h (see example file and rename)
 
 
-const char* ssid     = SECRET_WIFI_SSID;
-const char* password = SECRET_WIFI_PASS;
+// const char* ssid     = SECRET_WIFI_SSID;
+// const char* password = SECRET_WIFI_PASS;
 
 MiniKame robot;
 boolean walk = false;
@@ -162,117 +163,30 @@ void notFound(AsyncWebServerRequest *request) {
 }
 
 AsyncWebServer server(80);
+WiFiConfig WifiConfig;
 
-const char* wifi_html = R"rawliteral(
-<h2>WiFi Settings</h2>
-<form action="/connect" method="POST">
-  SSID: <input type="text" name="ssid"><br>
-  Password: <input type="password" name="pass"><br>
-  <input type="submit" value="Connect">
-</form>
-<button onclick="scan()">Scan</button>
-<div id="networks"></div>
-<button onclick="wipe()">Wipe Saved Networks</button>
-<button onclick="ap()">Switch to AP Mode</button>
-<a href="/">Back</a>
 
-<script>
-  function scan() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/scan", true);
-    xhr.send();
-  }
 
-  function wipe() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/wipe", true);
-    xhr.send();
-  }  
-
-  function ap() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/ap", true);
-    xhr.send();
-  }
-</script>
-)rawliteral";
-
-AsyncWiFiManager wifiManager(&server,{});
 
 void setup() {
-  // Serial.begin(115200);
-  // WiFi.mode(WIFI_STA);
-  // WiFi.begin(ssid, password);
-  // if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-  //   Serial.println("WiFi Failed!");
-  //   return;
-  // }
-  // Serial.println();
-  // Serial.print("ESP IP Address: http://");
-  // Serial.println(WiFi.localIP());
+  Serial.begin(115200);
+  Serial.println();
 
-  // ComCode ="";
-  wifiManager.autoConnect("kame");
-
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("Connected");
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-      request->send_P(200, "text/html", index_html);
-    });
-  } else {
-    Serial.println("Failed to connect"); 
-  }
-
-  server.on("/wifi-setting", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/html", wifi_html);
-  });
-
-  server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request)
-            {
-  int n = WiFi.scanNetworks();
-  String json = "[";
-  for (int i = 0; i < n; i++) {
-    json += "{";
-    json += "\"ssid\":\"" + WiFi.SSID(i) + "\","; 
-    json += "\"rssi\":" + String(WiFi.RSSI(i));
-    json += "}";
-    if (i < n - 1) {
-      json += ",";
-    }
-  }
-  json += "]";
-  request->send(200, "application/json", json); });
-
-
-  server.on("/wipe", HTTP_GET, [](AsyncWebServerRequest *request){
-    wifiManager.resetSettings();
-    request->send(200, "text/plain", "OK");
-  });
-
-  server.on("/ap", HTTP_GET, [](AsyncWebServerRequest *request){
-    wifiManager.startConfigPortal("kame");
-    request->send(200, "text/plain", "OK");
-  });
-
-  server.on("/connect", HTTP_POST, [](AsyncWebServerRequest *request)
-            {
-  String ssid = request->arg("ssid");
-  String pass = request->arg("pass");
+  // tries to connect to wifi in sta mode using the stored credentials, falls back to app mode if it fails
+  WifiConfig.WiFiSetup();
+  // handles the wifi settings page if requested
+  WifiConfig.WiFiWebHandler(server);
   
-  if(wifiManager.autoConnect(ssid.c_str(), pass.c_str())) {
-    request->send(200, "text/plain", "Connected");
-  } else {
-    request->send(500, "text/plain", "Failed to connect");
-  } });
 
+  ComCode ="";
+  
+
+  
   
   pinMode(output, OUTPUT);
   digitalWrite(output, LOW);
 
-   // Start mDNS ... so that it could be found via kame.local ... on android only works with additional app, e.g. BonjourBrowser
-  MDNS.begin("kame");
-  MDNS.addService("http", "tcp", 80);
-  
+    
 
   
   // Send web page to client
@@ -280,11 +194,7 @@ void setup() {
     request->send_P(200, "text/html", index_html);
   });
 
-  // Send Wifi-setting page to client
-  server.on("/wifi-setting", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/html", wifi_html);
-  });
-
+  
   // Receive an HTTP GET request
   server.on("/on", HTTP_GET, [] (AsyncWebServerRequest *request) {
     String inputMessage;
