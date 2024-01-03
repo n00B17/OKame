@@ -13,7 +13,7 @@ This is my variation of a minikame quadruped robot thingy.
 I basically wanted to have a kame like robot but utilizing an esp32 (or esp8266...later) to be controlled via web interface.\
 It seems there once were more of those kind of projects but searching the internet ended in a lot of dead links..
 
-**Functions:**\
+**Functions:**
  - Besides the web controls (see picture below) with some movements it inherited from JavierIH's kame..
  - ..it can be updated via web (OTA, Over The Air)..
  - ..and has a simple non-captive WiFiManager, meaning:
