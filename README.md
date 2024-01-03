@@ -14,16 +14,16 @@ I basically wanted to have a kame like robot but utilizing an esp32 (or esp8266.
 It seems there once were more of those kind of projects but searching the internet ended in a lot of dead links..
 
 **Functions:**\
-    - Besides the web controls (see picture below) with some movements it inherited from JavierIH's kame..
-    - ..it can be updated via web (OTA, Over The Air)..
-    - ..and has a simple non-captive WiFiManager, meaning:
-        + by default it tries to connect to a known wifi network (if one was set)
-        + if that fails it sets up an own access point named "kame", no password
-        + it can be run/ controlled in access point mode
-        + on the bottom right is a button to call the wifi-manager page to set and save new credentials and connect to that one (it only stores one set of credentials for now)
-        + if connection fails it falls back to access point mode
-    - in ap as well as sta mode it advertises itself via mDNS (multicast DNS)
-        + ..which doesnt work for android by default => I use the "BonjourBrowser"
+ - Besides the web controls (see picture below) with some movements it inherited from JavierIH's kame..
+ - ..it can be updated via web (OTA, Over The Air)..
+ - ..and has a simple non-captive WiFiManager, meaning:
+   + by default it tries to connect to a known wifi network (if one was set)
+   + if that fails it sets up an own access point named "kame", no password
+   + it can be run/ controlled in access point mode
+   + on the bottom right is a button to call the wifi-manager page to set and save new credentials and connect to that one (it only stores one set of credentials for now)
+   + if connection fails it falls back to access point mode
+- in ap as well as sta mode it advertises itself via mDNS (multicast DNS)
+  + ..which doesnt work for android by default => I use the "BonjourBrowser" https://play.google.com/store/apps/details?id=de.wellenvogel.bonjourbrowser
 
 **Credits:**\
 Go to.. 
