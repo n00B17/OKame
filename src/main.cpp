@@ -17,22 +17,29 @@
 // ServoArm 21, 17, 16
 
 #include <Arduino.h>
+// #include <ESPmDNS.h>
+#include "WiFiConfig.h"
+
+
 //#include <WiFi.h>
 //#include <WiFiMulti_Generic.h>
 //#include <SoftwareSerial.h>
 //#include <Arduino_FreeRTOS.h>
-#include <AsyncTCP.h>
+//#include <AsyncTCP.h> already included in AsyncWebServer.h
 
-#include <ESPAsyncWebServer.h>
+//#include <ESPAsyncWebServer.h> // Async Web Server likely already included in ElegantOTA.h
 #include "minikame.h"
 #include <ElegantOTA.h>
 #include "credentials.h" //
+//#include <WiFiManager.h>
+// #include <ESPAsyncWiFiManager.h>
+#include <ArduinoJson.h>
 
 // REPLACE WITH YOUR NETWORK CREDENTIALS or set in credentials.h (see example file and rename)
 
 
-const char* ssid     = SECRET_WIFI_SSID;
-const char* password = SECRET_WIFI_PASS;
+// const char* ssid     = SECRET_WIFI_SSID;
+// const char* password = SECRET_WIFI_PASS;
 
 MiniKame robot;
 boolean walk = false;
@@ -105,9 +112,9 @@ const char index_html[] PROGMEM = R"rawliteral(
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="run"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Run</button> </label></form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="nix"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">nix</button> </label></form></td>
     </tr>
-    <tr><td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="nix" type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">nix</button> </label></form></td>
+    <tr><td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="update" type="button" onmousedown="goToUpdatePage();" ontouchstart="goToUpdatePage();" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">Update</button> </label></form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action="">&nbsp;</form></td>
-      <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="nix"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">nix</button> </label></form></td>
+      <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="wifi"  type="button" onmousedown="goToWifiPage();" ontouchstart="goToWifiPage();" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect yellow">WiFi</button> </label></form></td>
     </tr>
     <!--
     <tr><td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Unterarm_hoch" type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Unterarm_hoch</button> </label></form></td>
@@ -118,7 +125,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Oberarm_runter"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Oberarm_runter</button> </label></form></td>
       <td align="center" valign="middle"><form name="form1" method="post" action=""><label><button id="Greifer_auf"  type="button" onmousedown="toggleOnbox(this);" ontouchstart="toggleOnbox(this);" onmouseup="toggleOffbox(this);" ontouchend="toggleOffbox(this);" class="button antiselect blue">Greifer_auf</button> </label></form></td>
     </tr>
-  </table><p class="foot">this application requires Mwilmar Quadruped platform.</p></body> -->
+  </table><p class="foot"><a href="/update">Update Firmware</a>.</p></body> -->
   </html>
 
    <script>
@@ -132,39 +139,62 @@ const char index_html[] PROGMEM = R"rawliteral(
      xhr.open("GET", "/off" , true);
      xhr.send();
    }
+   function goToUpdatePage() {
+    // Redirect to the "/update" page
+    window.location.href = "/update";
+    }
+    function goToWifiPage() {
+    // Redirect to the "/update" page
+    window.location.href = "/wifi-setting";
+    }
   </script>
   </body>
 </html>)rawliteral";
+
+
+//for now this the wifi-setting page is just a place holder 
+// const char wifi_html[] PROGMEM = R"rawliteral(
+// <!DOCTYPE html><html>
+// <head> TEstpage </head>
+// </html>)rawliteral";
 
 void notFound(AsyncWebServerRequest *request) {
   request->send(404, "text/plain", "Not found");
 }
 
 AsyncWebServer server(80);
+WiFiConfig WifiConfig;
+
+
+
 
 void setup() {
   Serial.begin(115200);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("WiFi Failed!");
-    return;
-  }
   Serial.println();
-  Serial.print("ESP IP Address: http://");
-  Serial.println(WiFi.localIP());
+
+  // tries to connect to wifi in sta mode using the stored credentials, falls back to app mode if it fails
+  WifiConfig.WiFiSetup();
+  // handles the wifi settings page if requested
+  WifiConfig.WiFiWebHandler(server);
+  
 
   ComCode ="";
+  
 
+  
   
   pinMode(output, OUTPUT);
   digitalWrite(output, LOW);
+
+    
+
   
   // Send web page to client
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", index_html);
   });
 
+  
   // Receive an HTTP GET request
   server.on("/on", HTTP_GET, [] (AsyncWebServerRequest *request) {
     String inputMessage;
@@ -272,8 +302,15 @@ void loop() {
     robot.clawOpen();
     }
     //Serial.print("ComCode=");
-    //Serial.println(ComCode);            
- }
+    //Serial.println(ComCode);    
+//update+wifi
+    if (ComCode=="wifi") {
+    Serial.println(ComCode);  
+    }    
+    if (ComCode=="update") {
+    Serial.println(ComCode);      
+    } 
+  }
  if (!walk){
   robot.home();
  }
