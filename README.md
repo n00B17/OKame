@@ -3,6 +3,7 @@
 **Status/ Expectation Management:**\
  - I am a noob (hence the name)..
  - ..web-searched most of this (so my ability to explain is limited..)
+ - ..also had some help from ChatGPT (well.. it was help- <ins>and</ins> painful)..
  - ..and just started messing with github as well.
  - I played with arduino before and really hated Platformio ...initially..
  - ..but -unfortunately- it makes sense and is a lot easier when using it with the VS Code Editor and it's plugins
