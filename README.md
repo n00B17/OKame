@@ -1,5 +1,11 @@
 # OKame
 
+**This Version...**\
+..has a speed slider (in the web interface) to influence the speed of certain movements.\
+Not sure about its usefulness hence the separate branch.\
+Might be more useful to experiment with settings for the speed of certain movements.\
+
+
 **Status/ Expectation Management:**\
  - I am a noob (hence the name)..
  - ..web-searched most of this (so my ability to explain is limited..)
