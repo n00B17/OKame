@@ -363,7 +363,7 @@ void loop() {
     robot.frontBack(4,200-speed);
     }
     if (ComCode=="omniwalk") {
-    robot.omniWalk(2,550,0,2);
+    robot.omniWalk(2,550,0,0);
     }
 //arm .. currently not in use
     // if (ComCode=="Unterarm_hoch") {

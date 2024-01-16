@@ -310,8 +310,8 @@ void MiniKame::run(float steps, int T=5000){
 }
 
 void MiniKame::omniWalk(float steps, int T, bool side, float turn_factor){
-    int x_amp = 15;
-    int z_amp = 15;
+    int x_amp = 15;         //if side => turn right, else turn left
+    int z_amp = 15;         //turn factor =0 => run straight turn factor = 1 => turn around, in between => run a curve
     int ap = 15;
     int hi = 23;
     int front_x = 6 * (1-pow(turn_factor, 2));
