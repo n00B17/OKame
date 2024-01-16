@@ -38,9 +38,15 @@ Go to..
  - MusaW for creating this here: https://www.instructables.com/Simple-NodeMCU-18-DOF-Hexapod ... from whom I stole most of the web control parts
 
 
+**Explanation for the actual magic:**\
+See this link: https://oberschweiber.com/2020/03/06/minikame-motion.html
+
+
+
 **OKame:**\
 ..looks like this\
 ![Nicolas_Bot](https://github.com/n00B17/OKame/assets/46864870/b2c25fa0-bac4-4f04-9b8c-c9d57355643a)
+
 
 
 
